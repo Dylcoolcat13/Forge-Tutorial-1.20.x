@@ -1,6 +1,10 @@
 package net.dylan.tutorialmod;
 
 import com.mojang.logging.LogUtils;
+import net.dylan.tutorialmod.block.modBlocks;
+import net.dylan.tutorialmod.item.ModCreativeModeTabs;
+import net.dylan.tutorialmod.item.modItems;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -18,14 +22,18 @@ import org.slf4j.Logger;
 @Mod(TutorialMod.MOD_ID)
 public class TutorialMod {
 
-    // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "tutorialmod";
-    // Directly reference a slf4j logger
+
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public TutorialMod(FMLJavaModLoadingContext context)
     {
         IEventBus modEventBus = context.getModEventBus();
+
+        ModCreativeModeTabs.register(modEventBus);
+
+        modItems.register(modEventBus);
+        modBlocks.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
@@ -42,9 +50,11 @@ public class TutorialMod {
     }
 
     // Add the example block item to the building blocks tab
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(modItems.SAPPHIRE);
+            event.accept(modItems.RAW_SAPPHIRE);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
